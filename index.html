@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Live Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 40px auto;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Live Data Chart</h2>
+<canvas id="chart"></canvas>
+
+<script>
+const DATA_URL = "https://raw.githubusercontent.com/Verkiezingswinnaar/dashboard-data/main/data.json";
+
+const ctx = document.getElementById('chart');
+
+const chart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    datasets: [{
+      label: 'Value',
+      data: [],
+      borderWidth: 2,
+      tension: 0.2
+    }]
+  },
+  options: {
+    responsive: true,
+    parsing: false,
+    interaction: {
+      mode: 'nearest',
+      intersect: false
+    },
+    scales: {
+      x: {
+        type: 'time',
+        time: {
+          tooltipFormat: 'yyyy-MM-dd HH:mm:ss'
+        }
+      },
+      y: {
+        beginAtZero: false
+      }
+    }
+  }
+});
+
+async function loadData() {
+  try {
+    const response = await fetch(DATA_URL + '?t=' + Date.now(), {
+      cache: 'no-store'
+    });
+    const data = await response.json();
+
+    chart.data.datasets[0].data = data.map(d => ({
+      x: d.timestamp,
+      y: d.value
+    }));
+
+    chart.update();
+  } catch (err) {
+    console.error("Data fetch failed:", err);
+  }
+}
+
+loadData();
+setInterval(loadData, 60000); // update every minute
+</script>
+
+</body>
+</html>
