@@ -9,6 +9,7 @@ const chart = new Chart(ctx, {
     },
     options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
             title: {
                 display: true,
@@ -16,6 +17,20 @@ const chart = new Chart(ctx, {
                 font: {
                     size: 18
                 }
+            },
+            tooltip: {
+                // callbacks: {
+                //     title: function(context) {
+                //         console.log(context[0].label)
+                //         return `Date: ${context[0].label.toLocaleString()}`;
+                //     },
+                //     label: function(context) {
+                //         return `${context.dataset.label}: ${context.parsed.y}`;
+                //     },
+                //     footer: function(context) {
+                //         return 'Custom footer text';
+                //     }
+                // }
             }
         },
         parsing: false,
@@ -56,4 +71,4 @@ const chart = new Chart(ctx, {
 });
 
 loadData(chart);
-setInterval(loadData, 60000, chart); // update every minute
+setInterval(loadData, 5000, chart); // update every minute
