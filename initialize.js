@@ -11,6 +11,32 @@ const chart = new Chart(ctx, {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
+            legend: {
+                // Increase the border width when hoovering over a party name in the legend.
+                onHover: (event, legendItem, legend) => {
+                    const chart = legend.chart;
+                    const datasetIndex = legendItem.datasetIndex;
+
+                    chart.data.datasets.forEach((dataset, index) => {
+                        if (index === datasetIndex) {
+                            dataset.borderWidth = 5;
+                        } else {
+                            dataset.borderWidth = 1; // dim others
+                        }
+                    });
+
+                    chart.update();
+                },
+                onLeave: (event, legendItem, legend) => {
+                    const chart = legend.chart;
+
+                    chart.data.datasets.forEach(dataset => {
+                        dataset.borderWidth = 2;
+                    });
+
+                    chart.update();
+                }
+            },
             title: {
                 display: true,
                 text: "Welke partij wordt de grootste?",
@@ -28,7 +54,7 @@ const chart = new Chart(ctx, {
                 //         return `${context.dataset.label}: ${context.parsed.y}`;
                 //     },
                 //     footer: function(context) {
-                //         return 'Custom footer text';
+                //         return context.;
                 //     }
                 // }
             }

@@ -72,6 +72,11 @@ function processData(chart, snapshots) {
                 isHidden = true
             }
 
+            let borderWidth = 2
+            if (chartData.datasets[chartDatasetIndex]) {
+                borderWidth = chartData.datasets[chartDatasetIndex].borderWidth
+            }
+
             if (hasReachedThreshold[partyName]) {
                 chartData.datasets[chartDatasetIndex] = {
                     data: snapshots.map(snapshot => ({
@@ -79,7 +84,7 @@ function processData(chart, snapshots) {
                         y: snapshot.party_snapshots[partyName].votes_percentage
                     })),
                     label: partyName,
-                    borderWidth: 2,
+                    borderWidth: borderWidth,
                     tension: 0.2,
                     borderColor: partyColors[partyName],
                     backgroundColor: partyColors[partyName],
