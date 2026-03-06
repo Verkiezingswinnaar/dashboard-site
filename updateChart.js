@@ -1,6 +1,5 @@
 
-const DATA_URL = "https://verkiezingswinnaar.s3.eu-north-1.amazonaws.com/data.jsonl.gz"
-//const DATA_URL = "http://localhost:63342/data.jsonl.gz"
+import * as constants from "./constants.js";
 
 const partyColors = {
     LOKAAL: "#1ABC9C",
@@ -26,7 +25,7 @@ const partyColors = {
  * @param {Chart} chart -
  */
 export async function loadData(chart) {
-    fetchGzipJSONL(DATA_URL)
+    fetchGzipJSONL(constants.DATA_URL)
         .then(snapshots => {
             console.log("JSONL data:", snapshots);
             processData(chart, snapshots)
@@ -38,66 +37,64 @@ export async function loadData(chart) {
 
 function processData(chart, snapshots) {
     try {
-        let chartData = chart.data
-        let hasReachedThreshold = {}
+        const chartData = chart.data
+        const hasReachedThreshold = {}
 
         // Filter out all parties that are unlikely to get a seat
-        // (=less than 0.5% of the expected votes in all timestamps)
-        for (let snapshotIdx in snapshots) {
-            let snapshot = snapshots[snapshotIdx] // Snapshot JSON that was exported from Python
-            for (let partyName in snapshot.party_snapshots) {
-                let partySnapshot = snapshot.party_snapshots[partyName]
-                hasReachedThreshold[partyName] = hasReachedThreshold[partyName] || partySnapshot.votes_percentage > 0.5
+        // (=less than 0.5% (default) of the expected votes in all timestamps)
+        for (const snapshot of snapshots) {
+            for (const [partyName, partySnapshot] of Object.entries(snapshot.party_snapshots)) {
+                if (!hasReachedThreshold[partyName]) {
+                    hasReachedThreshold[partyName] =
+                        partySnapshot.votes_percentage > constants.FILTER_THRESHOLD;
+                }
             }
         }
 
-        // Get all parties that have reached the 0.5% threshold
-        let partyNames = Object.keys(hasReachedThreshold).filter(key => hasReachedThreshold[key]);
-        partyNames.sort()
+        // Get all parties that have reached the threshold
+        const partyNames = Object.keys(hasReachedThreshold).filter(key => hasReachedThreshold[key]).sort();
 
         // Check whether a party was marked as 'hidden' by the user before the update
-        let isVisible = {}
-        for (let chartDatasetIndex in chartData.datasets) {
-            let dataset = chartData.datasets[chartDatasetIndex]
-            let partyName = dataset.label
-            isVisible[partyName] = chart.isDatasetVisible(chartDatasetIndex)
-        }
+        const isVisible = {};
+        chartData.datasets.forEach((dataset, index) => {
+            isVisible[dataset.label] = chart.isDatasetVisible(index);
+        });
 
-        let chartDatasetIndex = 0
-        for (let partyIdx in partyNames) {
-            let partyName = partyNames[partyIdx]
+        let datasetIndex = 0
+        for (const partyName of partyNames) {
+            const existingDataset = chartData.datasets[datasetIndex];
 
-            let isHidden = false
-            if (typeof isVisible[partyName] !== "undefined" && !isVisible[partyName]) {
-                isHidden = true
-            }
+            const isHidden = isVisible[partyName] === false;
+            const borderWidth = existingDataset?.borderWidth ?? 2;
 
-            let borderWidth = 2
-            if (chartData.datasets[chartDatasetIndex]) {
-                borderWidth = chartData.datasets[chartDatasetIndex].borderWidth
-            }
+            const y_axis_key = constants.IS_NATIONAL_ELECTION
+                ? "votes_percentage"
+                : "relative_vote_change";
 
-            if (hasReachedThreshold[partyName]) {
-                chartData.datasets[chartDatasetIndex] = {
-                    data: snapshots.map(snapshot => ({
-                        x: snapshot.timestamp,
-                        y: snapshot.party_snapshots[partyName].votes_percentage
-                    })),
-                    label: partyName,
-                    borderWidth: borderWidth,
-                    tension: 0.2,
-                    borderColor: partyColors[partyName],
-                    backgroundColor: partyColors[partyName],
-                    hidden: isHidden // Hide a party again if the party was hidden by the user.
+            const data = snapshots.map(snapshot => {
+                const party = snapshot.party_snapshots[partyName];
+                return {
+                    x: snapshot.timestamp,
+                    y: party[y_axis_key]
                 };
-                chartDatasetIndex += 1
-            }
+            });
+
+            chartData.datasets[datasetIndex] = {
+                label: partyName,
+                data: data,
+                borderWidth: borderWidth,
+                tension: 0.2,
+                borderColor: partyColors[partyName],
+                backgroundColor: partyColors[partyName],
+                hidden: isHidden // Hide a party again if the party was hidden by the user.
+            };
+            datasetIndex++
         }
 
         // Change the end of the x-axis to the whole hour after the end of the most recent snapshot.
-        let lastSnapshot = snapshots[snapshots.length - 1]
-        let millisecondsToHour = 3600 * 1000
-        chart.options.scales.x.max = Math.ceil(lastSnapshot.timestamp / millisecondsToHour) * millisecondsToHour;
+        const lastSnapshot = snapshots.at(-1)
+        const msToHour = 3600 * 1000
+        chart.options.scales.x.max = Math.ceil(lastSnapshot.timestamp / msToHour) * msToHour;
 
         chart.update('none');
 
