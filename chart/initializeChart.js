@@ -17,6 +17,7 @@ export function createChart(ctx) {
                 mode: "nearest",
                 intersect: false
             },
+            animation: false,
 
             plugins: {
                 legend: getLegend(),
@@ -25,17 +26,18 @@ export function createChart(ctx) {
                 zoom: {
                     pan: {
                         enabled: true,
-                        mode: 'x'
+                        mode: 'x',
+                        threshold: 10
                     },
                     zoom: {
-                        wheel: {
-                            enabled: true
-                        },
-                        pinch: {
-                            enabled: true
-                        },
+                        wheel: { enabled: true },
+                        pinch: { enabled: true },
                         mode: 'x'
-                    }
+                    },
+                },
+                decimation: {
+                    enabled: true,
+                    algorithm: "lttb"
                 }
             },
 
