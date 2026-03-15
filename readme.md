@@ -15,8 +15,8 @@ Meer uitleg over de methode achter deze prognoses staat in de **Backend-reposito
     - GitHub Pages voor hosting van de webpagina
 - `data.jsonl`
     - Elke regel in dit bestand bevat de resultaten en prognose.
-    - Elke minuut wordt er een regel aan dit document toegevoegd (mits er nieuwe res) 
-    - Dit bestand is opgeslagen op AWS en wordt continue geüpload vanuit de backend.
+    - Elke minuut wordt er een regel aan dit document toegevoegd (mits er nieuwe resultaten zijn).
+    - Dit bestand is opgeslagen op AWS en wordt continue geüpload vanuit de backend en gelezen door de frontend.
 - Backend
     - Python voor binnenhalen en verwerken van de resultaten en het maken van de prognose. 
   
