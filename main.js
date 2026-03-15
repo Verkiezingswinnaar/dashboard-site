@@ -1,5 +1,5 @@
 import { createChart } from "./chart/initializeChart.js";
-import { loadData } from "./updateChart.js";
+import { loadData } from "./chart/updateChart.js";
 
 const chart = createChart(document.getElementById("chart"));
 

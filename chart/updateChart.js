@@ -1,5 +1,5 @@
 
-import * as constants from "./constants.js";
+import * as constants from "../constants.js";
 
 const partyColors = {
     LOKAAL: "#1ABC9C",
