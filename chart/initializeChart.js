@@ -3,6 +3,9 @@ import { getLegend } from "./plugins/legend.js";
 import { getTitle } from "./plugins/title.js";
 import { getScales } from "./scales.js";
 import { getTooltip } from "./plugins/tooltip.js";
+import { getZoom } from "./plugins/zoom.js";
+
+
 
 export function createChart(ctx) {
     return new Chart(ctx, {
@@ -23,18 +26,7 @@ export function createChart(ctx) {
                 legend: getLegend(),
                 title: getTitle(),
                 tooltip: getTooltip(),
-                zoom: {
-                    pan: {
-                        enabled: true,
-                        mode: 'x',
-                        threshold: 10
-                    },
-                    zoom: {
-                        wheel: { enabled: true },
-                        pinch: { enabled: true },
-                        mode: 'x'
-                    },
-                },
+                zoom: getZoom(),
                 decimation: {
                     enabled: true,
                     algorithm: "lttb"
