@@ -20,7 +20,7 @@ Meer uitleg over de methode achter deze prognoses staat in de **Backend-reposito
 - Backend
     - Python voor binnenhalen en verwerken van de resultaten en het maken van de prognose. 
   
-Voor meer informatie over de backend, zie de 'Backend' repository.
+Voor meer informatie over de backend, zie de [Backend repository](https://github.com/Verkiezingswinnaar/Backend).
 
 # Vragen of suggesties?
 Vragen over [VerkiezingsWinnaar.nl](https://verkiezingswinnaar.nl)? Voel je vrij om me [een mail](mailto:verkiezingswinnaar@outlook.com) of [een PM op Reddit](https://www.reddit.com/user/VerkiezingsWinnaar/) te sturen.  
