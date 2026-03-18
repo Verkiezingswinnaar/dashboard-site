@@ -5,6 +5,12 @@ export function getScales() {
         ? "Prognose stemmen (%)"
         : "Groei stemmen sinds 2022 (%)";
 
+    const font = {
+        size: 16,
+        weight: "bold",
+        lineHeight: 1.2
+    }
+
     return {
         x: {
             type: "time",
@@ -14,6 +20,11 @@ export function getScales() {
                     minute: "HH:mm"
                 },
                 tooltipFormat: 'dd MMM yyyy, HH:mm', // fallback format
+            },
+            title: {
+                display: true,
+                text: "Tijd (uren:minuten)",
+                font: font
             },
             afterBuildTicks: scale => {
                 const ticks = [];
@@ -36,14 +47,14 @@ export function getScales() {
                 const end = scale.max;
 
                 for (let t = start; t <= end; t += stepsize) {
-                    ticks.push({ value: t });
+                    ticks.push({value: t});
                 }
 
                 scale.ticks = ticks;
             },
             grid: {
                 drawBorder: false,
-                color: function(ctx) {
+                color: function (ctx) {
                     // Color all Midnight grid lines black
                     // Color all 1-hour grid lines dark gray
                     // Color all other grid lines light gray
@@ -58,7 +69,7 @@ export function getScales() {
                         return "rgba(0,0,0,0.08)"
                     }
                 },
-                lineWidth: function(ctx) {
+                lineWidth: function (ctx) {
                     // Make the midnight grid lines fat
                     if (ctx.tick) {
                         const d = new Date(ctx.tick.value);
@@ -74,14 +85,10 @@ export function getScales() {
             title: {
                 display: true,
                 text: yText,
-                font: {
-                    size: 18,
-                    weight: "bold",
-                    lineHeight: 1.2
-                }
+                font: font
             },
             ticks: {
-                callback: function(value) {
+                callback: function (value) {
                     return value + '%';
                 }
             }
